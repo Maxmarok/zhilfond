@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'prefix' => '/v1',
+    'as' => 'api.',
+], function(){
+
+    Route::get('/items', [App\Http\Controllers\API\ItemsController::class, 'getItems']);
+    Route::post('/cart', [App\Http\Controllers\API\CartController::class, 'getCart']);
+    Route::post('/order', [App\Http\Controllers\API\CartController::class, 'createOrder']);
+    Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->prefix('orders')->as('orders.')->group(function(){
+        Route::get('/', [App\Http\Controllers\API\Dashboard\OrdersController::class, 'getOrders']);
+        Route::delete('/delete/{id}', [App\Http\Controllers\API\Dashboard\OrdersController::class, 'deleteOrder'])->name('delete');
+    });
 });
